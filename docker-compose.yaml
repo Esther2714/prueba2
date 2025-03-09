@@ -1,0 +1,36 @@
+services:
+  php-apache:
+    build: ./php
+    depends_on:
+      - db
+    ports:
+      - "8088:80"
+    volumes:
+      - /home/ubuntu/dockerDeployment/product-inventory/app:/var/www/html
+    networks:
+      phpnet:
+        ipv4_address: 192.168.150.200
+        aliases:
+          - phpserver
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inventario
+      MYSQL_USER: daw
+      MYSQL_PASSWORD: feb2025
+    volumes:
+      - /home/ubuntu/dockerDeployment/product-inventory/script/:/docker-entrypoint-initdb.d/
+    networks:
+      phpnet:
+        ipv4_address: 192.168.150.201
+        aliases:
+          - mysqlserver
+networks:
+  phpnet:
+    name: phpnet
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.150.0/24
